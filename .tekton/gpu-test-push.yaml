@@ -25,6 +25,8 @@ spec:
     value: quay.io/redhat-user-workloads/tmadore-tenant/gpu-test:{{revision}}
   - name: dockerfile
     value: Containerfile
+  - name: build-args
+    value: [FLAVOR=gpu]
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while reducing network traffic.
@@ -211,6 +213,8 @@ spec:
         workspace: netrc
     - name: build-container
       params:
+      - name: PLATFORM
+        value: linux-g6xlarge/amd64
       - name: IMAGE
         value: $(params.output-image)
       - name: DOCKERFILE
@@ -232,12 +236,13 @@ spec:
         value: $(params.build-args-file)
       runAfter:
       - prefetch-dependencies
+      timeout: "1h0m0s"
       taskRef:
         params:
         - name: name
-          value: buildah
+          value: buildah-remote
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah:0.4@sha256:91caef22ccb5bbc694e33eb8706cddb662840e9dc351c7e57a23f7dc50dae2e5
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote:0.4@sha256:1e138efef0921ee5164d8702acfcfac2a8d6299901b812d73ffccc024c8eb605
         - name: kind
           value: task
         resolver: bundles
